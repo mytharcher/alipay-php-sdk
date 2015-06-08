@@ -14,16 +14,19 @@
  */
 
 require_once("alipay.config.php");
-require_once("lib/alipay_notify.class.php");
+require_once("../Alipay.class.php");
 ?>
 <!DOCTYPE HTML>
 <html>
-    <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>支付宝即时到账交易接口</title>
+</head>
+<body>
 <?php
 //计算得出通知验证结果
-$alipayNotify = new AlipayNotify($alipay_config);
-$verify_result = $alipayNotify->verifyReturn();
+$alipay = new Alipay($alipay_config);
+$verify_result = $alipay->verifyCallback();
 if($verify_result) {//验证成功
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//请在这里加上商户的业务逻辑程序代码
@@ -31,10 +34,12 @@ if($verify_result) {//验证成功
 	//——请根据您的业务逻辑来编写程序（以下代码仅作参考）——
     //获取支付宝的通知返回参数，可参考技术文档中页面跳转同步通知参数列表
 
-	//商户订单号
+	//商户订单号
+
 	$out_trade_no = $_GET['out_trade_no'];
 
-	//支付宝交易号
+	//支付宝交易号
+
 	$trade_no = $_GET['trade_no'];
 
 	//交易状态
@@ -62,8 +67,5 @@ else {
     echo "验证失败";
 }
 ?>
-        <title>支付宝即时到账交易接口</title>
-	</head>
-    <body>
-    </body>
+</body>
 </html>
