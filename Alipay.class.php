@@ -26,8 +26,8 @@ class Alipay {
 	);
 	var $is_mobile = FALSE;
 
-	var $service               = 'create_direct_pay_by_user',
-	var $service_wap           = 'alipay.wap.trade.create.direct',
+	var $service               = 'create_direct_pay_by_user';
+	var $service_wap           = 'alipay.wap.trade.create.direct';
 	
 	var $alipay_gateway_new    = 'https://mapi.alipay.com/gateway.do?';
 	var $alipay_gateway_mobile = 'http://wappaygw.alipay.com/service/rest.htm?';
