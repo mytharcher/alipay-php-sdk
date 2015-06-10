@@ -59,7 +59,7 @@
 		'body'         => $order['category']['name'],
 		'total_fee'    => $order['price'],
 		'merchant_url' => 'http://'.$_SERVER['HTTP_HOST'].'/product/xx',
-		'req_id'       => date('Ymdhis-').$order['id'],
+		'req_id'       => date('Ymdhis-').$order['id']
 	))
 
 	// 移动网页版接口只支持 GET 方式提交

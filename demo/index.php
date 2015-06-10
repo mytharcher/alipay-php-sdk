@@ -12,7 +12,8 @@
 <html>
 <head>
 <title>支付宝即时到账交易接口接口</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <style>
 *{
 	margin:0;

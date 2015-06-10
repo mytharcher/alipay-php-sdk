@@ -102,14 +102,14 @@ class Alipay {
 	 */
 	function buildSignedParameters($params) {
 		$default = array(
-			'service' => $this->config['service'],
+			'service' => $this->service,
 			'partner' => $this->config['partner']
 		);
 
 		if (!$this->is_mobile) {
 			$default = array_merge($default, array(
 				'payment_type' => $this->config['payment_type'],
-				'seller_email' => $this->config['seller_email'],
+				'seller_id'    => $this->config['partner'],
 				'notify_url'   => $this->config['notify_url'],
 				'return_url'   => $this->config['return_url']
 			));
@@ -173,8 +173,8 @@ class Alipay {
 	function prepareMobileTradeData($params) {
 		// 不要用 SimpleXML 来构建 xml 结构，因为有第一行文档申明支付宝验证不通过
 		$xml_str = '<direct_trade_create_req>' .
-			'<notify_url>' . $this->config['notify_url_mobile'] . '</notify_url>'.
-			'<call_back_url>' . $this->config['return_url_mobile'] . '</call_back_url>'.
+			'<call_back_url>' . $this->config['return_url'] . '</call_back_url>'.
+			'<notify_url>' . $this->config['notify_url'] . '</notify_url>'.
 			'<seller_account_name>' . $this->config['seller_email'] . '</seller_account_name>'.
 
 			'<out_trade_no>' . $params['out_trade_no'] . '</out_trade_no>'.
@@ -184,7 +184,7 @@ class Alipay {
 			'</direct_trade_create_req>';
 
 		$request_data = $this->buildSignedParameters(array(
-			'service'           => $this->config['service'],
+			'service'           => $this->service,
 			'partner'           => $this->config['partner'],
 			'sec_id'            => $this->config['sign_type'],
 			'format'            => 'xml',

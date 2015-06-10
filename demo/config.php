@@ -25,8 +25,22 @@ $alipay_config['partner']		= '';
 //安全检验码，以数字和字母组成的32位字符
 $alipay_config['key']			= '';
 
+//商户注册邮箱，移动支付必选配置
+$alipay_config['seller_email']  = '';
+
 
 //↑↑↑↑↑↑↑↑↑↑请在这里配置您的基本信息↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+
+//支付类型
+$alipay_config['payment_type'] = "1";
+//必填，不能修改
+//服务器异步通知页面路径
+$alipay_config['notify_url'] = "http://" . $_SERVER['HTTP_HOST'] . "/notify_url.php";
+//需http://格式的完整路径，不能加?id=123这类自定义参数
+
+//页面跳转同步通知页面路径
+$alipay_config['return_url'] = "http://" . $_SERVER['HTTP_HOST'] . "/return_url.php";
+//需http://格式的完整路径，不能加?id=123这类自定义参数，不能写成http://localhost/
 
 
 //签名方式 不需修改
