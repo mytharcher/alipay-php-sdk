@@ -57,7 +57,7 @@ class Alipay {
 	 * 未考虑参数中空格被编码成加号“+”等情况
 	 */
 	function signParameters ($params) {
-		$paramStr = http_build_str($params);
+		$paramStr = http_build_query($params);
 		$result = "";
 		switch (strtoupper(trim($this->config['sign_type']))) {
 			case "MD5" :
@@ -298,7 +298,7 @@ class Alipay {
 			);
 		}
 
-		$content = http_build_str($params);
+		$content = http_build_query($params);
 
 		switch (strtoupper(trim($this->config['sign_type']))) {
 			case "MD5" :
