@@ -91,7 +91,7 @@ $parameter = array(
 
 //建立请求
 $alipay = new Alipay($alipay_config);
-$html_text = $alipay->buildRequestFormHTML($parameter,"get");
+$html_text = $alipay->buildRequestFormHTML($parameter,"post");
 echo $html_text;
 
 ?>

@@ -57,7 +57,9 @@ class Alipay {
 	 * 未考虑参数中空格被编码成加号“+”等情况
 	 */
 	function signParameters ($params) {
-		$paramStr = http_build_query($params);
+		// 支付宝的签名串必须是未经过 urlencode 的字符串
+		// 不清楚为何 PHP 5.5 里没有 http_build_str() 方法
+		$paramStr = urldecode(http_build_query($params));
 		$result = "";
 		switch (strtoupper(trim($this->config['sign_type']))) {
 			case "MD5" :
@@ -298,7 +300,7 @@ class Alipay {
 			);
 		}
 
-		$content = http_build_query($params);
+		$content = urldecode(http_build_query($params));
 
 		switch (strtoupper(trim($this->config['sign_type']))) {
 			case "MD5" :
@@ -314,16 +316,20 @@ class Alipay {
 	}
 
 	function filterSignParameter($params) {
-		return array_filter($params, function ($value, $key) {
-			return $key != "sign" && $key != "sign_type" && $value;
-		});
+		$result = array();
+		foreach ($params as $key => $value) {
+			if ($key != "sign" && $key != "sign_type" && $value) {
+				$result[$key] = $value;
+			}
+		}
+		return $result;
 	}
 
 	function verifyFromServer($notify_id) {
 		$transport = strtolower(trim($this->config['transport']));
 		$partner = trim($this->config['partner']);
 
-		$veryfy_url = ($transport == 'https' ? $this->$verify_url_https : $this->$verify_url) . "partner=$partner&notify_id=$notify_id";
+		$veryfy_url = ($transport == 'https' ? $this->verify_url_https : $this->verify_url) . "partner=$partner&notify_id=$notify_id";
 
 		$curl = curl_init($veryfy_url);
 		curl_setopt($curl, CURLOPT_HEADER, 0 ); // 过滤HTTP头
