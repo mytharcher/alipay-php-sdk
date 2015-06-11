@@ -24,7 +24,7 @@
 
 require_once("config.php");
 require_once("../Alipay.class.php");
-require_once("../lib/Mobile_Detect.php");
+require_once("lib/Mobile_Detect.php");
 
 /**************************请求参数**************************/
 //商户订单号

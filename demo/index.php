@@ -1,17 +1,7 @@
-<?php
-/* *
- * 功能：支付宝即时到账交易接口接口调试入口页面
- * 版本：3.3
- * 日期：2012-07-23
- * 说明：
- * 以下代码只是为了方便商户测试而提供的样例代码，商户可以根据自己网站的需要，按照技术文档编写,并非一定要使用该代码。
- */
-
-?>
 <!DOCTYPE html>
 <html>
 <head>
-<title>支付宝即时到账交易接口接口</title>
+<title>支付宝即时到账交易接口测试</title>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <style>
