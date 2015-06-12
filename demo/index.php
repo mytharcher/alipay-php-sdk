@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>支付宝即时到账交易接口测试</title>
+<title>支付宝即时到账交易接口接口</title>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <style>
@@ -159,15 +159,9 @@ ul,ol{
 				<li class="last">3、确认完成</li>
             </ol>
         </div>
-        <form name=alipayment action=alipayapi.php method=post target="_blank">
+        <form name=alipayment action="alipayapi.php" method=post target="_blank">
             <div id="body" style="clear:left">
                 <dl class="content">
-                    <dt>卖家支付宝帐户：</dt>
-                    <dd>
-                        <span class="null-star">*</span>
-                        <input size="30" name="WIDseller_email" />
-                        <span>必填</span>
-                    </dd>
                     <dt>商户订单号：</dt>
                     <dd>
                         <span class="null-star">*</span>

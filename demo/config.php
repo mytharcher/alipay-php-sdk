@@ -18,21 +18,19 @@
  * 2、更换浏览器或电脑，重新登录查询。
  */
  
-//↓↓↓↓↓↓↓↓↓↓请在这里配置您的基本信息↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+//请在这里配置您的基本信息
+$alipay_config = array();
+
 //合作身份者id，以2088开头的16位纯数字
-$alipay_config['partner']		= '';
+$alipay_config['partner']       = '2088xxxxxxxxxxxx';
 
 //安全检验码，以数字和字母组成的32位字符
-$alipay_config['key']			= '';
+$alipay_config['key']           = 'xxxxxxxx';
 
-//商户注册邮箱，移动支付必选配置
-$alipay_config['seller_email']  = '';
-
-
-//↑↑↑↑↑↑↑↑↑↑请在这里配置您的基本信息↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+$alipay_config['seller_email']  = 'email@domain.com';
 
 //支付类型
-$alipay_config['payment_type'] = "1";
+$alipay_config['payment_type']  = "1";
 //必填，不能修改
 //服务器异步通知页面路径
 $alipay_config['notify_url'] = "http://" . $_SERVER['HTTP_HOST'] . "/notify_url.php";
@@ -41,7 +39,6 @@ $alipay_config['notify_url'] = "http://" . $_SERVER['HTTP_HOST'] . "/notify_url.
 //页面跳转同步通知页面路径
 $alipay_config['return_url'] = "http://" . $_SERVER['HTTP_HOST'] . "/return_url.php";
 //需http://格式的完整路径，不能加?id=123这类自定义参数，不能写成http://localhost/
-
 
 //签名方式 不需修改
 $alipay_config['sign_type']    = strtoupper('MD5');

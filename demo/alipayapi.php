@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8" />
+<meta charset="utf-8" >
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <title>支付宝即时到账交易接口接口</title>
 </head>
@@ -23,10 +23,12 @@
  */
 
 require_once("config.php");
-require_once("../Alipay.class.php");
+require_once("lib/Alipay.class.php");
 require_once("lib/Mobile_Detect.php");
 
+
 /**************************请求参数**************************/
+
 //商户订单号
 $out_trade_no = $_POST['WIDout_trade_no'];
 //商户网站订单系统中唯一订单号，必填
@@ -57,21 +59,20 @@ $exter_invoke_ip = "";
 
 /************************************************************/
 
-
 $detector = new Mobile_Detect();
-$is_mobile = $detector->is_mobile();
+$is_mobile = $detector->isMobile();
 //建立请求
 $alipay = new Alipay($alipay_config, $is_mobile);
+
 if ($is_mobile) {
 	$params = $alipay->prepareMobileTradeData(array(
 		'out_trade_no' => $out_trade_no,
-		'subject'	   => $subject,
+		'subject'      => $subject,
 		'body'         => $body,
 		'total_fee'    => $total_fee,
 		'merchant_url' => 'http://'.$_SERVER['HTTP_HOST'],
 		'req_id'       => date('Ymdhis-')
 	));
-
 	echo $alipay->buildRequestFormHTML($params, 'get');
 } else {
 	echo $alipay->buildRequestFormHTML(array(
@@ -80,7 +81,7 @@ if ($is_mobile) {
 		"payment_type"  => $payment_type,
 		"notify_url"    => $notify_url,
 		"return_url"    => $return_url,
-		"seller_email"  => $seller_email,
+		"seller_id"     => $alipay_config['partner'],
 		"out_trade_no"  => $out_trade_no,
 		"subject"       => $subject,
 		"total_fee"     => $total_fee,
