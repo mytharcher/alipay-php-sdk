@@ -114,14 +114,11 @@ class Alipay {
 				'return_url'   => $this->config['return_url']
 			));
 		}
-
 		$params = $this->filterSignParameter(array_merge($default, $params));
-
 		ksort($params);
 		reset($params);
 
 		$params['sign'] = $this->signParameters($params);
-
 		if ($params['service'] != 'alipay.wap.trade.create.direct' && $params['service'] != 'alipay.wap.auth.authAndExecute') {
 			$params['sign_type'] = strtoupper(trim($this->config['sign_type']));
 		}
@@ -143,7 +140,6 @@ class Alipay {
 	 */
 	function buildRequestFormHTML($params, $method = 'post', $target = '_self') {
 		$params = $this->buildSignedParameters($params);
-
 		$html = "<form id='alipaysubmit' name='alipaysubmit' action='".$this->alipay_gateway_new."_input_charset=".trim(strtolower($this->config['input_charset']))."' method='$method' target='$target'>";
 
 		foreach ($params as $key => $value) {
@@ -173,8 +169,8 @@ class Alipay {
 	function prepareMobileTradeData($params) {
 		// 不要用 SimpleXML 来构建 xml 结构，因为有第一行文档申明支付宝验证不通过
 		$xml_str = '<direct_trade_create_req>' .
-			'<call_back_url>' . $this->config['return_url'] . '</call_back_url>'.
 			'<notify_url>' . $this->config['notify_url'] . '</notify_url>'.
+			'<call_back_url>' . $this->config['return_url'] . '</call_back_url>'.
 			'<seller_account_name>' . $this->config['seller_email'] . '</seller_account_name>'.
 
 			'<out_trade_no>' . $params['out_trade_no'] . '</out_trade_no>'.
@@ -214,8 +210,7 @@ class Alipay {
 		//var_dump( curl_error($curl) );//如果执行curl过程中出现异常，可打开此开关，以便查看异常内容
 		curl_close($curl);
 
-		$responseData = parse_str($responseText);
-
+		parse_str($responseText, $responseData);
 		if( ! empty ($responseData['res_data'])) {
 
 			if($this->config['sign_type'] == '0001') {
@@ -253,13 +248,11 @@ class Alipay {
 		$async = empty($_GET);
 
 		$data = $async ? $_POST : $_GET;
-
 		if (empty($data)) {
 			return FALSE;
 		}
 
 		$signValid = $this->verifyParameters($data, $data["sign"]);
-
 		$notify_id = $data['notify_id'];
 		if ($async && $this->is_mobile){
 			//对notify_data解密
@@ -272,13 +265,11 @@ class Alipay {
 			$doc->loadXML($data['notify_data']);
 			$notify_id = $doc->getElementsByTagName( 'notify_id' )->item(0)->nodeValue;
 		}
-
 		//获取支付宝远程服务器ATN结果（验证是否是支付宝发来的消息）
 		$responseTxt = 'true';
 		if (! empty($notify_id)) {
 			$responseTxt = $this->verifyFromServer($notify_id);
 		}
-		
 		//验证
 		//$signValid的结果不是true，与安全校验码、请求时的参数格式（如：带自定义参数等）、编码格式有关
 		//$responsetTxt的结果不是true，与服务器设置问题、合作身份者ID、notify_id一分钟失效有关
@@ -328,9 +319,7 @@ class Alipay {
 	function verifyFromServer($notify_id) {
 		$transport = strtolower(trim($this->config['transport']));
 		$partner = trim($this->config['partner']);
-
 		$veryfy_url = ($transport == 'https' ? $this->verify_url_https : $this->verify_url) . "partner=$partner&notify_id=$notify_id";
-
 		$curl = curl_init($veryfy_url);
 		curl_setopt($curl, CURLOPT_HEADER, 0 ); // 过滤HTTP头
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);//SSL证书认证
@@ -338,9 +327,8 @@ class Alipay {
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);// 显示输出结果
 		curl_setopt($curl, CURLOPT_CAINFO, $this->config['cacert']);//证书地址
 		$responseText = curl_exec($curl);
-		//var_dump( curl_error($curl) );//如果执行curl过程中出现异常，可打开此开关，以便查看异常内容
+		// var_dump( curl_error($curl) );//如果执行curl过程中出现异常，可打开此开关，以便查看异常内容
 		curl_close($curl);
-
 		return $responseText;
 	}
 
