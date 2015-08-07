@@ -1,5 +1,7 @@
 <?php
 
+namespace mytharcher\sdk\alipay;
+
 class Alipay {
 	// 配置信息在实例化时传入，以下为范例
 	var $config = array(

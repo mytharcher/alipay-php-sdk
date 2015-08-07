@@ -1,0 +1,15 @@
+{
+	"name": "mytharcher/alipay-sdk-test",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "mytharcher",
+			"email": "mytharcher@gmail.com"
+		}
+	],
+	"require": {
+		"php": ">=5.3.0",
+		"mytharcher/alipay-php-sdk": "dev-master",
+		"mobiledetect/mobiledetectlib": "^2.8"
+	}
+}
