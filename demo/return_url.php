@@ -13,8 +13,10 @@
  * 该页面可以使用PHP开发工具调试，也可以使用写文本函数logResult，该函数已被默认关闭，见alipay_notify_class.php中的函数verifyReturn
  */
 
+require __DIR__ . '/vendor/autoload.php';
+
 require_once("config.php");
-require_once("lib/Alipay.class.php");
+// require_once("lib/Alipay.class.php");
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -26,7 +28,10 @@ require_once("lib/Alipay.class.php");
 <body>
 <?php
 //计算得出通知验证结果
-$alipay = new Alipay($alipay_config);
+$detector = new Detection\MobileDetect();
+$is_mobile = $detector->isMobile();
+
+$alipay = new mytharcher\sdk\alipay\Alipay($alipay_config, $is_mobile);
 $verify_result = $alipay->verifyCallback();
 if($verify_result) {//验证成功
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

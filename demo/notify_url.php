@@ -15,11 +15,13 @@
  * 如果没有收到该页面返回的 success 信息，支付宝会在24小时内按一定的时间策略重发通知
  */
 
+require __DIR__ . '/vendor/autoload.php';
+
 require_once("config.php");
-require_once("lib/Alipay.class.php");
+// require_once("lib/Alipay.class.php");
 
 //计算得出通知验证结果
-$alipay = new Alipay($alipay_config);
+$alipay = new mytharcher\sdk\alipay\Alipay($alipay_config);
 $verify_result = $alipay->verifyCallback(TRUE);
 
 if($verify_result) {//验证成功

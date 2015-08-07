@@ -22,9 +22,11 @@
  * 如果不想使用扩展功能请把扩展功能参数赋空值。
  */
 
+require __DIR__ . '/vendor/autoload.php';
+
 require_once("config.php");
-require_once("lib/Alipay.class.php");
-require_once("lib/Mobile_Detect.php");
+// require_once("lib/Alipay.class.php");
+// require_once("lib/Mobile_Detect.php");
 
 
 /**************************请求参数**************************/
@@ -59,10 +61,10 @@ $exter_invoke_ip = "";
 
 /************************************************************/
 
-$detector = new Mobile_Detect();
+$detector = new Detection\MobileDetect();
 $is_mobile = $detector->isMobile();
 //建立请求
-$alipay = new Alipay($alipay_config, $is_mobile);
+$alipay = new mytharcher\sdk\alipay\Alipay($alipay_config, $is_mobile);
 
 if ($is_mobile) {
 	$params = $alipay->prepareMobileTradeData(array(
@@ -78,9 +80,9 @@ if ($is_mobile) {
 	echo $alipay->buildRequestFormHTML(array(
 		"service"       => "create_direct_pay_by_user",
 		"partner"       => trim($alipay_config['partner']),
-		"payment_type"  => $payment_type,
-		"notify_url"    => $notify_url,
-		"return_url"    => $return_url,
+		"payment_type"  => $alipay_config['payment_type'],
+		"notify_url"    => $alipay_config['notify_url'],
+		"return_url"    => $alipay_config['return_url'],
 		"seller_id"     => $alipay_config['partner'],
 		"out_trade_no"  => $out_trade_no,
 		"subject"       => $subject,
