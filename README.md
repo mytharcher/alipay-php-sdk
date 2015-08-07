@@ -13,8 +13,20 @@
 使用方式
 ----------
 
-0. 下载项目代码，将`Alipay.class.php`和`cacert.pem`放置到项目的合适位置；
-0. 使用框架加载第三方类库方法，或者直接引入`Alipay.class.php`；
+### Composer 包 ###
+
+	$ composer require mytharcher/alipay-php-sdk
+
+或者在已有`composer.json`中添加：
+
+	"require": {
+		"mytharcher/alipay-php-sdk": "dev-master"
+	}
+
+### 普通引入 ###
+
+0. 下载项目代码，将`Alipay.php`和`cacert.pem`放置到项目的合适位置；
+0. 使用框架加载第三方类库方法，或者直接引入`Alipay.php`；
 
 ### 支付前 ###
 
