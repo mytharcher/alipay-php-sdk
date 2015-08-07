@@ -9,7 +9,7 @@
 	],
 	"require": {
 		"php": ">=5.3.0",
-		"mytharcher/alipay-php-sdk": "dev-feature-composer",
+		"mytharcher/alipay-php-sdk": "dev-master",
 		"mobiledetect/mobiledetectlib": "^2.8"
 	}
 }
