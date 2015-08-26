@@ -22,12 +22,12 @@
 $alipay_config = array();
 
 //合作身份者id，以2088开头的16位纯数字
-$alipay_config['partner']       = '2088911417361430';
+$alipay_config['partner']       = '2088000020880000';
 
 //安全检验码，以数字和字母组成的32位字符
-$alipay_config['key']           = '3qkrld9dzofv0fd98584d0lygjpkm4rb';
+$alipay_config['key']           = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 
-$alipay_config['seller_email']  = 'tangkids@126.com';
+$alipay_config['seller_email']  = 'you@email.com';
 
 //支付类型
 $alipay_config['payment_type']  = "1";
