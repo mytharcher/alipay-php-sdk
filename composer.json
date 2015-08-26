@@ -1,6 +1,6 @@
 {
 	"name": "mytharcher/alipay-php-sdk",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"description": "Refactored Alipay PHP SDK (include mobile version). 经重构的支付宝 PHP 开发包（含移动网页支付）",
 	"keywords": ["Alipay", "PHP", "SDK", "支付宝"],
 	"license": "MIT",
