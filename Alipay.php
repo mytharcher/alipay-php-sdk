@@ -2,6 +2,8 @@
 
 namespace mytharcher\sdk\alipay;
 
+use \DOMDocument;
+
 class Alipay {
 	// 配置信息在实例化时传入，以下为范例
 	var $config = array(
@@ -31,8 +33,7 @@ class Alipay {
 	var $service               = 'create_direct_pay_by_user';
 	var $service_wap           = 'alipay.wap.trade.create.direct';
 	
-	var $alipay_gateway_new    = 'https://mapi.alipay.com/gateway.do?';
-	var $alipay_gateway_mobile = 'http://wappaygw.alipay.com/service/rest.htm?';
+	var $alipay_gateway_mobile = 'https://mapi.alipay.com/gateway.do?';
 
 	var $verify_url            = 'http://notify.alipay.com/trade/notify_query.do?';
 	var $verify_url_https      = 'https://mapi.alipay.com/gateway.do?service=notify_verify&';
@@ -44,7 +45,6 @@ class Alipay {
 
 		if ($is_mobile) {
 			$this->service = $this->service_wap;
-			$this->alipay_gateway_new = $this->alipay_gateway_mobile;
 		}
 	}
 
@@ -142,7 +142,7 @@ class Alipay {
 	 */
 	function buildRequestFormHTML($params, $method = 'post', $target = '_self') {
 		$params = $this->buildSignedParameters($params);
-		$html = "<form id='alipaysubmit' name='alipaysubmit' action='".$this->alipay_gateway_new."_input_charset=".trim(strtolower($this->config['input_charset']))."' method='$method' target='$target'>";
+		$html = "<form id='alipaysubmit' name='alipaysubmit' action='".$this->alipay_gateway_mobile."_input_charset=".trim(strtolower($this->config['input_charset']))."' method='$method' target='$target'>";
 
 		foreach ($params as $key => $value) {
 			$html .= "<input type='hidden' name='$key' value='$value'/>";
@@ -194,7 +194,7 @@ class Alipay {
 			'_input_charset'    => $this->config['input_charset']
 		));
 
-		$url = $this->alipay_gateway_new;
+		$url = $this->alipay_gateway_mobile;
 		$input_charset = trim(strtolower($this->config['input_charset']));
 
 		if (trim($input_charset) != '') {
