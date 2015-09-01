@@ -178,7 +178,7 @@ class Alipay {
 			'<seller_account_name>' . $this->config['seller_email'] . '</seller_account_name>'.
 
 			'<out_trade_no>' . $params['out_trade_no'] . '</out_trade_no>'.
-			'<subject>' . $params['subject'] . '</subject>'.
+			'<subject>' . htmlspecialchars($params['subject'] , ENT_XML1, 'UTF-8') . '</subject>'.
 			'<total_fee>' . $params['total_fee'] . '</total_fee>'.
 			'<merchant_url>' . $params['merchant_url'] . '</merchant_url>' .
 			'</direct_trade_create_req>';
