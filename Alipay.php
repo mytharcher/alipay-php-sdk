@@ -8,19 +8,19 @@ class Alipay {
 	// 配置信息在实例化时传入，以下为范例
 	var $config = array(
 		// // 即时到账方式
-		// 'payment_type' => 1,
+		'payment_type' => 1,
 		// // 传输协议
-		// 'transport' => 'http',
+		'transport' => 'http',
 		// // 编码方式
-		// 'input_charset' => 'utf-8',
+		'input_charset' => 'utf-8',
 		// // 签名方法
-		// 'sign_type' => 'MD5',
+		'sign_type' => 'MD5',
+		// // 证书路径
+		'cacert' => './cacert.pem'
 		// // 支付完成异步通知调用地址
 		// 'notify_url' => 'http://'.$_SERVER['HTTP_HOST'.'>/order/callback_alipay/notify',
 		// // 支付完成同步返回地址
 		// 'return_url' => 'http://'.$_SERVER['HTTP_HOST'.'>/order/callback_alipay/return',
-		// // 证书路径
-		// 'cacert' => APPPATH.'third_party/alipay/cacert.pem',
 		// // 支付宝商家 ID
 		// 'partner'      => '2088xxxxxxxx',
 		// // 支付宝商家 KEY
@@ -28,6 +28,7 @@ class Alipay {
 		// // 支付宝商家注册邮箱
 		// 'seller_email' => 'email@domain.com'
 	);
+
 	var $is_mobile = FALSE;
 
 	var $service               = 'create_direct_pay_by_user';
@@ -40,7 +41,7 @@ class Alipay {
 	var $verify_url_https      = 'https://mapi.alipay.com/gateway.do?service=notify_verify&';
 
 	function __construct($config, $is_mobile = FALSE){
-		$this->config = $config;
+		$this->config = array_merge($this->config, $config);
 
 		$this->is_mobile = $is_mobile;
 
@@ -107,7 +108,8 @@ class Alipay {
 	function buildSignedParameters($params) {
 		$default = array(
 			'service' => $this->service,
-			'partner' => $this->config['partner']
+			'partner' => $this->config['partner'],
+			'_input_charset' => trim(strtolower($this->config['input_charset']))
 		);
 
 		if (!$this->is_mobile) {
@@ -167,8 +169,9 @@ class Alipay {
 	 *        $params['total_fee']    支付总费用
 	 *        $params['merchant_url'] 商品链接地址
 	 *        $params['req_id']       请求唯一 ID
+	 *        $params['it_b_pay']     超期时间（秒）
 	 * 
-	 * @return <Array>
+	 * @return <Array>/<NULL>
 	 */
 	function prepareMobileTradeData($params) {
 		// 不要用 SimpleXML 来构建 xml 结构，因为有第一行文档申明支付宝验证不通过
@@ -180,7 +183,8 @@ class Alipay {
 			'<out_trade_no>' . $params['out_trade_no'] . '</out_trade_no>'.
 			'<subject>' . htmlspecialchars($params['subject'] , ENT_XML1, 'UTF-8') . '</subject>'.
 			'<total_fee>' . $params['total_fee'] . '</total_fee>'.
-			'<merchant_url>' . $params['merchant_url'] . '</merchant_url>' .
+			'<merchant_url>' . $params['merchant_url'] . '</merchant_url>'.
+			(isset($params['it_b_pay']) ? '<pay_expire>' . $params['it_b_pay'] . '</pay_expire>' : '').
 			'</direct_trade_create_req>';
 
 		$request_data = $this->buildSignedParameters(array(
@@ -191,9 +195,7 @@ class Alipay {
 			'v'                 => '2.0',
 
 			'req_id'            => $params['req_id'],
-			'req_data'          => $xml_str,
-			
-			'_input_charset'    => $this->config['input_charset']
+			'req_data'          => $xml_str
 		));
 
 		$url = $this->alipay_gateway;
@@ -214,18 +216,24 @@ class Alipay {
 		//var_dump( curl_error($curl) );//如果执行curl过程中出现异常，可打开此开关，以便查看异常内容
 		curl_close($curl);
 
-		parse_str($responseText, $responseData);
-		if( ! empty ($responseData['res_data'])) {
-
-			if($this->config['sign_type'] == '0001') {
-				$responseData['res_data'] = rsaDecrypt($responseData['res_data'], $this->config['private_key_path']);
-			}
-
-			//token从res_data中解析出来（也就是说res_data中已经包含token的内容）
-			$doc = new DOMDocument();
-			$doc->loadXML($responseData['res_data']);
-			$responseData['request_token'] = $doc->getElementsByTagName( "request_token" )->item(0)->nodeValue;
+		if(empty($responseText)) {
+			return NULL;
 		}
+
+		parse_str($responseText, $responseData);
+
+		if(empty($responseData['res_data'])) {
+			return NULL;
+		}
+
+		if($this->config['sign_type'] == '0001') {
+			$responseData['res_data'] = rsaDecrypt($responseData['res_data'], $this->config['private_key_path']);
+		}
+
+		//token从res_data中解析出来（也就是说res_data中已经包含token的内容）
+		$doc = new DOMDocument();
+		$doc->loadXML($responseData['res_data']);
+		$responseData['request_token'] = $doc->getElementsByTagName( "request_token" )->item(0)->nodeValue;
 
 		$xml_str = '<auth_and_execute_req>'.
 			'<request_token>' . $responseData['request_token'] . '</request_token>'.
