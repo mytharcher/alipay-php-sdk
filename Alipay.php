@@ -265,7 +265,7 @@ class Alipay {
 		}
 
 		$signValid = $this->verifyParameters($data, $data["sign"]);
-		$notify_id = $data['notify_id'];
+		$notify_id = isset($data['notify_id']) ? $data['notify_id'] : NULL;
 		if ($async && $this->is_mobile){
 			//对notify_data解密
 			if ($this->config['sign_type'] == '0001') {
