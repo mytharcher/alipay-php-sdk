@@ -146,7 +146,7 @@ class Alipay {
 	 */
 	function buildRequestFormHTML($params, $method = 'post', $target = '_self') {
 		$params = $this->buildSignedParameters($params);
-		$html = "<meta charset='{$this->config[input_charset]}' /><form id='alipaysubmit' name='alipaysubmit' action='".$this->alipay_gateway."_input_charset=".trim(strtolower($this->config['input_charset']))."' method='$method' target='$target'>";
+		$html = "<meta charset='".$this->config['input_charset']."' /><form id='alipaysubmit' name='alipaysubmit' action='".$this->alipay_gateway."_input_charset=".trim(strtolower($this->config['input_charset']))."' method='$method' target='$target'>";
 
 		foreach ($params as $key => $value) {
 			$html .= "<input type='hidden' name='$key' value='$value'/>";
