@@ -33,7 +33,7 @@ class Alipay {
 
 	var $service               = 'create_direct_pay_by_user';
 	var $service_wap           = 'alipay.wap.trade.create.direct';
-	
+
 	var $alipay_gateway        = 'https://mapi.alipay.com/gateway.do?';
 	var $alipay_gateway_mobile = 'http://wappaygw.alipay.com/service/rest.htm?';
 
@@ -41,7 +41,7 @@ class Alipay {
 	var $verify_url_https      = 'https://mapi.alipay.com/gateway.do?service=notify_verify&';
 
 	function __construct($config, $is_mobile = FALSE){
-		$this->config = array_merge($this->config, $config);
+		$this->config = array_merge($this->config, (array) $config);
 
 		$this->is_mobile = $is_mobile;
 
@@ -53,11 +53,11 @@ class Alipay {
 
 	/**
 	 * 生成请求参数的签名
-	 * 
+	 *
 	 * @param $params <Array>
 	 *
 	 * @return <String>
-	 * 
+	 *
 	 * TODO:
 	 * 未考虑参数中空格被编码成加号“+”等情况
 	 */
@@ -84,13 +84,13 @@ class Alipay {
 			default :
 				$result = "";
 		}
-		
+
 		return $result;
 	}
 
 	/**
 	 * 生成签名后的请求参数
-	 * 
+	 *
 	 * @param $params <Array>
 	 *        $params['out_trade_no']     唯一订单编号
 	 *        $params['subject']
@@ -103,7 +103,7 @@ class Alipay {
 	 *        $params['_input_charset']
 	 *
 	 * @return <Array>
-	 * 
+	 *
 	 */
 	function buildSignedParameters($params) {
 		$default = array(
@@ -120,7 +120,7 @@ class Alipay {
 				'return_url'   => $this->config['return_url']
 			));
 		}
-		$params = $this->filterSignParameter(array_merge($default, $params));
+		$params = $this->filterSignParameter(array_merge($default, (array) $params));
 		ksort($params);
 		reset($params);
 
@@ -136,13 +136,13 @@ class Alipay {
 	 * 生成请求参数的发送表单HTML
 	 *
 	 * 其实这个函数没有必要，更应该使用签名后的参数自己组装，只不过有时候方便就从官方 SDK 里留下了。
-	 * 
+	 *
 	 * @param $params <Array> 请求参数（未签名的）
 	 * @param $method <String> 请求方法，默认：post，可选 get
 	 * @param $target <String> 提交目标，默认：_self
 	 *
 	 * @return <String>
-	 * 
+	 *
 	 */
 	function buildRequestFormHTML($params, $method = 'post', $target = '_self') {
 		$params = $this->buildSignedParameters($params);
@@ -159,10 +159,10 @@ class Alipay {
 
 	/**
 	 * 准备移动网页支付的请求参数
-	 * 
+	 *
 	 * 移动网页支付接口不同，需要先服务器提交一次请求，拿到返回 token 再返回客户端发起真实支付请求。
 	 * 该方法只完成第一次服务端请求，生成参数后需要客户端另行处理（可调用`buildRequestFormHTML`生成表单提交）。
-	 * 
+	 *
 	 * @param $params <Array>
 	 *        $params['out_trade_no'] 订单唯一编号
 	 *        $params['subject']      商品标题
@@ -170,7 +170,7 @@ class Alipay {
 	 *        $params['merchant_url'] 商品链接地址
 	 *        $params['req_id']       请求唯一 ID
 	 *        $params['it_b_pay']     超期时间（秒）
-	 * 
+	 *
 	 * @return <Array>/<NULL>
 	 */
 	function prepareMobileTradeData($params) {
@@ -251,9 +251,9 @@ class Alipay {
 
 	/**
 	 * 支付完成验证返回参数（包含同步和异步）
-	 * 
+	 *
 	 * @param $async <Boolean> 是否异步通知模式
-	 * 
+	 *
 	 * @return <Boolean>
 	 */
 	function verifyCallback() {
@@ -271,7 +271,7 @@ class Alipay {
 			if ($this->config['sign_type'] == '0001') {
 				$data['notify_data'] = $this->rsaDecrypt($data['notify_data'], $this->config['private_key_path']);
 			}
-			
+
 			//notify_id从decrypt_post_para中解析出来（也就是说decrypt_post_para中已经包含notify_id的内容）
 			$doc = new DOMDocument();
 			$doc->loadXML($data['notify_data']);
@@ -355,7 +355,7 @@ class Alipay {
 		$pubKey = file_get_contents($ali_public_key_path);
 		$res = openssl_get_publickey($pubKey);
 		$result = (bool)openssl_verify($data, base64_decode($sign), $res);
-		openssl_free_key($res);    
+		openssl_free_key($res);
 		return $result;
 	}
 
