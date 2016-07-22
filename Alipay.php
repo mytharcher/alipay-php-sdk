@@ -6,7 +6,7 @@ use \DOMDocument;
 
 class Alipay {
 	// 配置信息在实例化时传入，以下为范例
-	var $config = array(
+	public $config = array(
 		// // 即时到账方式
 		'payment_type' => 1,
 		// // 传输协议
@@ -29,16 +29,20 @@ class Alipay {
 		// 'seller_email' => 'email@domain.com'
 	);
 
-	var $is_mobile = FALSE;
+	public $is_mobile = FALSE;
 
-	var $service               = 'create_direct_pay_by_user';
-	var $service_wap           = 'alipay.wap.trade.create.direct';
+	public $service               = 'create_direct_pay_by_user';
+	public $service_wap           = 'alipay.wap.create.direct.pay.by.user';
 
-	var $alipay_gateway        = 'https://mapi.alipay.com/gateway.do?';
-	var $alipay_gateway_mobile = 'http://wappaygw.alipay.com/service/rest.htm?';
+	public $alipay_gateway        = 'https://mapi.alipay.com/gateway.do?';
 
-	var $verify_url            = 'http://notify.alipay.com/trade/notify_query.do?';
-	var $verify_url_https      = 'https://mapi.alipay.com/gateway.do?service=notify_verify&';
+	public $verify_url            = 'http://notify.alipay.com/trade/notify_query.do?';
+	public $verify_url_https      = 'https://mapi.alipay.com/gateway.do?service=notify_verify&';
+	/**
+	 * rsa私钥路径
+	 * @var string
+	 */
+	public $rsaKeyPath = '';
 
 	function __construct($config, $is_mobile = FALSE){
 		$this->config = array_merge($this->config, (array) $config);
@@ -47,16 +51,23 @@ class Alipay {
 
 		if ($is_mobile) {
 			$this->service = $this->service_wap;
-			$this->alipay_gateway = $this->alipay_gateway_mobile;
 		}
+	}
+
+	/**
+	 * 设置rsa私钥路径
+	 * @param $keyPath
+	 */
+	public function setRsaPrivateKeyPath($keyPath)
+	{
+		$this->rsaKeyPath = $keyPath;
 	}
 
 	/**
 	 * 生成请求参数的签名
 	 *
 	 * @param $params <Array>
-	 *
-	 * @return <String>
+	 * @return string <String>
 	 *
 	 * TODO:
 	 * 未考虑参数中空格被编码成加号“+”等情况
@@ -65,7 +76,6 @@ class Alipay {
 		// 支付宝的签名串必须是未经过 urlencode 的字符串
 		// 不清楚为何 PHP 5.5 里没有 http_build_str() 方法
 		$paramStr = urldecode(http_build_query($params));
-		$result = "";
 		switch (strtoupper(trim($this->config['sign_type']))) {
 			case "MD5" :
 				$result = md5($paramStr . $this->config['key']);
@@ -73,7 +83,7 @@ class Alipay {
 
 			case "RSA" :
 			case "0001" :
-				$priKey = file_get_contents($this->config['private_key_path']);
+				$priKey = file_get_contents($this->rsaKeyPath);
 				$res = openssl_get_privatekey($priKey);
 				openssl_sign($paramStr, $sign, $res);
 				openssl_free_key($res);
@@ -101,8 +111,7 @@ class Alipay {
 	 *        $params['exter_invoke_ip']
 	 *        $params['it_b_pay']
 	 *        $params['_input_charset']
-	 *
-	 * @return <Array>
+	 * @return array <Array>
 	 *
 	 */
 	function buildSignedParameters($params) {
@@ -112,14 +121,12 @@ class Alipay {
 			'_input_charset' => trim(strtolower($this->config['input_charset']))
 		);
 
-		if (!$this->is_mobile) {
-			$default = array_merge($default, array(
-				'payment_type' => $this->config['payment_type'],
-				'seller_id'    => $this->config['partner'],
-				'notify_url'   => $this->config['notify_url'],
-				'return_url'   => $this->config['return_url']
-			));
-		}
+		$default = array_merge($default, array(
+			'payment_type' => $this->config['payment_type'],
+			'seller_id'    => $this->config['partner'],
+			'notify_url'   => $this->config['notify_url'],
+			'return_url'   => $this->config['return_url']
+		));
 		$params = $this->filterSignParameter(array_merge($default, (array) $params));
 		ksort($params);
 		reset($params);
@@ -138,10 +145,9 @@ class Alipay {
 	 * 其实这个函数没有必要，更应该使用签名后的参数自己组装，只不过有时候方便就从官方 SDK 里留下了。
 	 *
 	 * @param $params <Array> 请求参数（未签名的）
-	 * @param $method <String> 请求方法，默认：post，可选 get
-	 * @param $target <String> 提交目标，默认：_self
-	 *
-	 * @return <String>
+	 * @param string $method <String> 请求方法，默认：post，可选 get
+	 * @param string $target <String> 提交目标，默认：_self
+	 * @return string <String>
 	 *
 	 */
 	function buildRequestFormHTML($params, $method = 'post', $target = '_self') {
@@ -170,8 +176,7 @@ class Alipay {
 	 *        $params['merchant_url'] 商品链接地址
 	 *        $params['req_id']       请求唯一 ID
 	 *        $params['it_b_pay']     超期时间（秒）
-	 *
-	 * @return <Array>/<NULL>
+	 * @return array|null <Array>/<NULL>
 	 */
 	function prepareMobileTradeData($params) {
 		// 不要用 SimpleXML 来构建 xml 结构，因为有第一行文档申明支付宝验证不通过
@@ -227,7 +232,7 @@ class Alipay {
 		}
 
 		if($this->config['sign_type'] == '0001') {
-			$responseData['res_data'] = rsaDecrypt($responseData['res_data'], $this->config['private_key_path']);
+			$responseData['res_data'] = $this->rsaDecrypt($responseData['res_data'], $this->rsaKeyPath);
 		}
 
 		//token从res_data中解析出来（也就是说res_data中已经包含token的内容）
@@ -251,10 +256,9 @@ class Alipay {
 
 	/**
 	 * 支付完成验证返回参数（包含同步和异步）
+	 * @return bool <Boolean>
+	 * @internal param $async <Boolean> 是否异步通知模式
 	 *
-	 * @param $async <Boolean> 是否异步通知模式
-	 *
-	 * @return <Boolean>
 	 */
 	function verifyCallback() {
 		$async = empty($_GET);
@@ -269,7 +273,7 @@ class Alipay {
 		if ($async && $this->is_mobile){
 			//对notify_data解密
 			if ($this->config['sign_type'] == '0001') {
-				$data['notify_data'] = $this->rsaDecrypt($data['notify_data'], $this->config['private_key_path']);
+				$data['notify_data'] = $this->rsaDecrypt($data['notify_data'], $this->rsaKeyPath);
 			}
 
 			//notify_id从decrypt_post_para中解析出来（也就是说decrypt_post_para中已经包含notify_id的内容）
@@ -291,17 +295,8 @@ class Alipay {
 	function verifyParameters($params, $sign) {
 		$params = $this->filterSignParameter($params);
 
-		if (!$this->is_mobile) {
-			ksort($params);
-			reset($params);
-		} else {
-			$params = array(
-				'service' => $params['service'],
-				'v' => $params['v'],
-				'sec_id' => $params['sec_id'],
-				'notify_data' => $params['notify_data']
-			);
-		}
+		ksort($params);
+		reset($params);
 
 		$content = urldecode(http_build_query($params));
 
@@ -311,7 +306,7 @@ class Alipay {
 
 			case "RSA" :
 			case "0001" :
-				return $this->rsaVerify($content, $this->config['private_key_path'], $sign);
+				return $this->rsaVerify($content, $this->rsaKeyPath, $sign);
 
 			default :
 				return FALSE;
@@ -346,10 +341,10 @@ class Alipay {
 
 	/**
 	 * RSA验签
-	 * @param $data 待签名数据
-	 * @param $ali_public_key_path 支付宝的公钥文件路径
-	 * @param $sign 要校对的的签名结果
-	 * return 验证结果
+	 * @param $data string 待签名数据
+	 * @param $ali_public_key_path string 支付宝的公钥文件路径
+	 * @param $sign string 要校对的的签名结果
+	 * @return bool 验证结果
 	 */
 	function rsaVerify($data, $ali_public_key_path, $sign)  {
 		$pubKey = file_get_contents($ali_public_key_path);
@@ -361,9 +356,9 @@ class Alipay {
 
 	/**
 	 * RSA解密
-	 * @param $content 需要解密的内容，密文
-	 * @param $private_key_path 商户私钥文件路径
-	 * return 解密后内容，明文
+	 * @param $content string 需要解密的内容，密文
+	 * @param $private_key_path string 商户私钥文件路径
+	 * @return string 解密后内容，明文
 	 */
 	function rsaDecrypt($content, $private_key_path) {
 		$priKey = file_get_contents($private_key_path);
