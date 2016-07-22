@@ -316,7 +316,7 @@ class Alipay {
 	function filterSignParameter($params) {
 		$result = array();
 		foreach ($params as $key => $value) {
-			if ($key != "sign" && $key != "sign_type" && $value) {
+			if ($key != "sign" && $value) {
 				$result[$key] = $value;
 			}
 		}
