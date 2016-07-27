@@ -119,8 +119,9 @@ $params = array(
 $paramStr = $alipay->buildSignedParametersForApp(/*$params*/); //此代码可以直接给APP端提交
 
 ```
-```
 验签：
+
+```
 $config['sign_type'] = 'RSA';
 $alipay = new Alipay(/* config... */,'app');
 // 获得验证结果 true/false
@@ -132,7 +133,7 @@ API
 
 主要的几个方法如下：
 
-### `new Alipay($config = array(), $is_mobile = FALSE)` ###
+### `new Alipay($config = array(), $type='')` ###
 
 构造方法，创建支付对象实例。
 
