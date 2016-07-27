@@ -13,6 +13,7 @@
 * 有一定 PHP 项目经验（能 debug 类库源码）的开发者
 
 
+
 使用方式
 ----------
 
@@ -128,12 +129,16 @@ $alipay = new Alipay(/* config... */,'app');
 $result = $alipay->verifyCallback();
 ```
 
+
 API
 ----------
 
 主要的几个方法如下：
 
 ### `new Alipay($config = array(), $type='')` ###
+
+- $config 配置数组
+- $type    wap 移动网页支付 /app 移动APP /其他PC支付
 
 构造方法，创建支付对象实例。
 
