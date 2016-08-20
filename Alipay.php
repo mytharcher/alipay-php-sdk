@@ -338,8 +338,17 @@ class Alipay {
     function verifyParameters($params, $sign) {
         $params = $this->filterSignParameter($params);
 
-        ksort($params);
-        reset($params);
+        if (isset($params['notify_data'])) {
+            $params = array(
+                'service' => $params['service'],
+                'v' => $params['v'],
+                'sec_id' => $params['sec_id'],
+                'notify_data' => $params['notify_data']
+            );
+        } else {
+            ksort($params);
+            reset($params);
+        }
 
         $content = urldecode(http_build_query($params));
 
